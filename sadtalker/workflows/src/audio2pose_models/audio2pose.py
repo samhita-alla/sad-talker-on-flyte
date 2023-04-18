@@ -7,7 +7,7 @@ from .discriminator import PoseSequenceDiscriminator
 
 
 class Audio2Pose(nn.Module):
-    def __init__(self, cfg, wav2lip_checkpoint, device="cuda"):
+    def __init__(self, cfg, wav2lip_checkpoint, device):
         super().__init__()
         self.cfg = cfg
         self.seq_len = cfg.MODEL.CVAE.SEQ_LEN

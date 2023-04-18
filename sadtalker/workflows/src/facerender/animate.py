@@ -22,7 +22,7 @@ from ..utils.videoio import save_video_with_watermark
 from .modules.make_animation import make_animation
 
 
-@task(requests=Resources(mem="5Gi", cpu="4"))
+@task(requests=Resources(mem="10Gi", cpu="4"))
 def animate_from_coeff_generate(
     frame_num: int,
     crop_info: str,
@@ -86,33 +86,39 @@ def animate_from_coeff_generate(
         full_video_path = os.path.join(video_save_dir_downloaded, video_name_full)
         return_path = full_video_path
 
-        paste_pic(path, pic_path_downloaded, crop_info, new_audio_path, full_video_path)
+        paste_pic(
+            path,
+            pic_path_downloaded,
+            json.loads(crop_info),
+            new_audio_path,
+            full_video_path,
+        )
         print(
             f"The generated video is named {video_save_dir_downloaded}/{video_name_full}"
         )
+    else:
+        full_video_path = av_path
 
-        #### paste back then enhancers
-        if enhancer:
-            video_name_enhancer = video_name + "_enhanced.mp4"
-            enhanced_path = os.path.join(
-                video_save_dir_downloaded, "temp_" + video_name_enhancer
-            )
-            av_path_enhancer = os.path.join(
-                video_save_dir_downloaded, video_name_enhancer
-            )
-            return_path = av_path_enhancer
-            enhanced_images = face_enhancer(
-                full_video_path, method=enhancer, bg_upsampler=background_enhancer
-            )
-            imageio.mimsave(enhanced_path, enhanced_images, fps=float(25))
+    #### paste back then enhancers
+    if enhancer:
+        video_name_enhancer = video_name + "_enhanced.mp4"
+        enhanced_path = os.path.join(
+            video_save_dir_downloaded, "temp_" + video_name_enhancer
+        )
+        av_path_enhancer = os.path.join(video_save_dir_downloaded, video_name_enhancer)
+        return_path = av_path_enhancer
+        enhanced_images = face_enhancer(
+            full_video_path, method=enhancer, bg_upsampler=background_enhancer
+        )
+        imageio.mimsave(enhanced_path, enhanced_images, fps=float(25))
 
-            save_video_with_watermark(
-                enhanced_path, new_audio_path, av_path_enhancer, watermark=None
-            )
-            print(
-                f"The generated video is named {video_save_dir_downloaded}/{video_name_enhancer}"
-            )
-            os.remove(enhanced_path)
+        save_video_with_watermark(
+            enhanced_path, new_audio_path, av_path_enhancer, watermark=None
+        )
+        print(
+            f"The generated video is named {video_save_dir_downloaded}/{video_name_enhancer}"
+        )
+        os.remove(enhanced_path)
 
     os.remove(path)
     os.remove(new_audio_path)
@@ -130,15 +136,14 @@ def animate_from_coeff_generate_wf(
     pic_path: FlyteFile,
     crop_info: str,
     enhancer: Optional[str],
-    full_img_enhancer: Optional[str],
     source_image: torch.Tensor,
     source_semantics: torch.Tensor,
     frame_num: int,
     target_semantics_list: torch.Tensor,
     video_name: str,
-    yaw_c_seq: Optional[torch.Tensor],
-    pitch_c_seq: Optional[torch.Tensor],
-    roll_c_seq: Optional[torch.Tensor],
+    yaw_c_seq: torch.Tensor,
+    pitch_c_seq: torch.Tensor,
+    roll_c_seq: torch.Tensor,
     audio_path: FlyteFile,
     background_enhancer: Optional[str],
     preprocess: str,

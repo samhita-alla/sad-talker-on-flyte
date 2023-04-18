@@ -44,7 +44,7 @@ def split_coeff(coeffs):
     }
 
 
-@task(requests=Resources(mem="5Gi", cpu="4"))
+@task(requests=Resources(mem="5Gi", cpu="2"))
 def loop_frames_pil(
     idx: int,
     frames_pil: List[Image.Image],
@@ -107,7 +107,7 @@ crop_and_extract_nt = NamedTuple(
 )
 
 
-@task(requests=Resources(mem="5Gi", cpu="4"))
+@task(requests=Resources(mem="5Gi", cpu="3"))
 def crop_and_extract(
     path_of_lm_croper: FlyteFile,
     path_of_net_recon_model: FlyteFile,
@@ -117,6 +117,7 @@ def crop_and_extract(
     save_dir: FlyteDirectory,
     save_dir_name: str,
     crop_or_resize: str,
+    source_image_flag: bool,
 ) -> crop_and_extract_nt:
     croper = Croper(path_of_lm_croper.download())
     kp_extractor = KeypointExtractor(device)
@@ -167,6 +168,8 @@ def crop_and_extract(
                 video_stream.release()
                 break
             full_frames.append(frame)
+            if source_image_flag:
+                break
 
     x_full_frames = [cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) for frame in full_frames]
 
@@ -184,7 +187,7 @@ def crop_and_extract(
             0,
             x_full_frames[0].shape[1],
         )
-        crop_info = json.dumps([ox2 - ox1, oy2 - oy1])
+        crop_info = json.dumps([(ox2 - ox1, oy2 - oy1), None, None])
 
     frames_pil = [
         Image.fromarray(cv2.resize(frame, (pic_size, pic_size)))
@@ -257,6 +260,7 @@ def crop_and_extract_wf(
     save_dir: FlyteDirectory,
     save_dir_name: str,
     crop_or_resize: str = "crop",
+    source_image_flag: bool = False,
 ) -> crop_and_extract_wf_nt:
     crop_and_extract_output = crop_and_extract(
         path_of_lm_croper=path_of_lm_croper,
@@ -267,6 +271,7 @@ def crop_and_extract_wf(
         save_dir=save_dir,
         save_dir_name=save_dir_name,
         crop_or_resize=crop_or_resize,
+        source_image_flag=source_image_flag,
     )
     map_task_partial = functools.partial(
         loop_frames_pil,

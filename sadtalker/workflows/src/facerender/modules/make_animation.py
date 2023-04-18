@@ -222,26 +222,27 @@ def load_cpk_mapping(
     return checkpoint["epoch"]
 
 
-@task(requests=Resources(mem="8Gi", cpu="4"))
+@task(requests=Resources(mem="5Gi", cpu="2"))
 def loop_make_animation(
     frame_idx: int,
     target_semantics: torch.Tensor,
     source_image: torch.Tensor,
     generator: OcclusionAwareSPADEGenerator,
     mapping: MappingNet,
-    yaw_c_seq: Optional[torch.Tensor],
-    pitch_c_seq: Optional[torch.Tensor],
-    roll_c_seq: Optional[torch.Tensor],
+    yaw_c_seq: torch.Tensor,
+    pitch_c_seq: torch.Tensor,
+    roll_c_seq: torch.Tensor,
     kp_canonical: Dict[str, torch.Tensor],
     kp_source: Dict[str, torch.Tensor],
 ) -> torch.Tensor:
     target_semantics_frame = target_semantics[:, frame_idx]
     he_driving = mapping(target_semantics_frame)
-    if yaw_c_seq is not None:
+
+    if torch.count_nonzero(yaw_c_seq).item() != 0:
         he_driving["yaw_in"] = yaw_c_seq[:, frame_idx]
-    if pitch_c_seq is not None:
+    if torch.count_nonzero(pitch_c_seq).item() != 0:
         he_driving["pitch_in"] = pitch_c_seq[:, frame_idx]
-    if roll_c_seq is not None:
+    if torch.count_nonzero(roll_c_seq).item() != 0:
         he_driving["roll_in"] = roll_c_seq[:, frame_idx]
 
     kp_driving = keypoint_transformation(kp_canonical, he_driving)

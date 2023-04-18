@@ -16,9 +16,9 @@ get_facerender_data_nt = NamedTuple(
     frame_num=int,
     target_semantics_list=torch.Tensor,
     video_name=str,
-    yaw_c_seq=Optional[torch.Tensor],
-    pitch_c_seq=Optional[torch.Tensor],
-    roll_c_seq=Optional[torch.Tensor],
+    yaw_c_seq=torch.Tensor,
+    pitch_c_seq=torch.Tensor,
+    roll_c_seq=torch.Tensor,
 )
 
 
@@ -105,16 +105,12 @@ def get_facerender_data(
         batch_size, -1, target_semantics_np.shape[-2], target_semantics_np.shape[-1]
     )
 
-    yaw_c_seq, pitch_c_seq, roll_c_seq = None, None, None
-    if input_yaw_list is not None:
-        yaw_c_seq = gen_camera_pose(input_yaw_list, frame_num, batch_size)
-        yaw_c_seq = torch.FloatTensor(yaw_c_seq)
-    if input_pitch_list is not None:
-        pitch_c_seq = gen_camera_pose(input_pitch_list, frame_num, batch_size)
-        pitch_c_seq = torch.FloatTensor(pitch_c_seq)
-    if input_roll_list is not None:
-        roll_c_seq = gen_camera_pose(input_roll_list, frame_num, batch_size)
-        roll_c_seq = torch.FloatTensor(roll_c_seq)
+    yaw_c_seq = gen_camera_pose(input_yaw_list, frame_num, batch_size)
+    yaw_c_seq = torch.FloatTensor(yaw_c_seq)
+    pitch_c_seq = gen_camera_pose(input_pitch_list, frame_num, batch_size)
+    pitch_c_seq = torch.FloatTensor(pitch_c_seq)
+    roll_c_seq = gen_camera_pose(input_roll_list, frame_num, batch_size)
+    roll_c_seq = torch.FloatTensor(roll_c_seq)
 
     return get_facerender_data_nt(
         source_image=source_image_ts,

@@ -76,7 +76,7 @@ def generate_blink_seq_randomly(num_frames):
     return ratio
 
 
-@task(requests=Resources(mem="7Gi", cpu="3"))
+@task(requests=Resources(mem="5Gi", cpu="1"))
 def loop_get_data(i: int, orig_mel: np.ndarray, spec: np.ndarray) -> np.ndarray:
     fps = 25
     syncnet_mel_step_size = 16
@@ -99,7 +99,8 @@ get_data_nt = NamedTuple(
 )
 
 
-@task(cache=True, cache_version="1.0")
+# @task(cache=True, cache_version="1.0")
+@task
 def get_data(
     audio_path: FlyteFile,
 ) -> get_data_nt:
@@ -171,7 +172,6 @@ def get_data_post_processing(
             refeyeblink_coeff_list = [refeyeblink_coeff for i in range(div)]
             refeyeblink_coeff_list.append(refeyeblink_coeff[:re, :64])
             refeyeblink_coeff = np.concatenate(refeyeblink_coeff_list, axis=0)
-            print(refeyeblink_coeff.shape[0])
 
         ref_coeff[:, :64] = refeyeblink_coeff[:num_frames, :64]
 

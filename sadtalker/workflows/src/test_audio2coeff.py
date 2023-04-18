@@ -5,7 +5,7 @@ from typing import NamedTuple, Optional
 import numpy as np
 import torch
 import urllib3
-from flytekit import Resources, task, workflow
+from flytekit import Resources, task
 from flytekit.types.directory import FlyteDirectory
 from flytekit.types.file import FlyteFile
 from scipy.io import loadmat, savemat
@@ -57,7 +57,7 @@ def using_refpose(coeffs_pred_numpy, ref_pose_coeff_path):
 generate_nt = NamedTuple("generate_nt", save_dir=FlyteDirectory, coeff_path=str)
 
 
-@task(requests=Resources(mem="1Gi", cpu="2"))
+@task(requests=Resources(mem="5Gi", cpu="4"))
 def generate_audio_to_coeff(
     audio2pose_checkpoint: FlyteFile,
     audio2pose_yaml_path: str,
@@ -174,40 +174,3 @@ def generate_audio_to_coeff(
             ),
             coeff_path=coeff_path,
         )
-
-
-@workflow
-def audio_to_coeff_wf(
-    audio2pose_checkpoint: FlyteFile,
-    audio2pose_yaml_path: str,
-    audio2exp_checkpoint: FlyteFile,
-    audio2exp_yaml_path: str,
-    wav2lip_checkpoint: FlyteFile,
-    device: str,
-    save_dir: FlyteDirectory,
-    pose_style: int,
-    ref_pose_coeff_path: Optional[str],
-    indiv_mels: torch.Tensor,
-    ref_coeff: torch.Tensor,
-    num_frames: int,
-    ratio_get: torch.Tensor,
-    audio_name: str,
-    pic_name: str,
-) -> str:
-    return generate_audio_to_coeff(
-        ref_pose_coeff_path=ref_pose_coeff_path,
-        audio2pose_checkpoint=audio2pose_checkpoint,
-        audio2pose_yaml_path=audio2pose_yaml_path,
-        audio2exp_checkpoint=audio2exp_checkpoint,
-        audio2exp_yaml_path=audio2exp_yaml_path,
-        wav2lip_checkpoint=wav2lip_checkpoint,
-        device=device,
-        coeff_save_dir=save_dir,
-        pose_style=pose_style,
-        audio_name=audio_name,
-        pic_name=pic_name,
-        indiv_mels=indiv_mels,
-        ref=ref_coeff,
-        num_frames=num_frames,
-        ratio_get=ratio_get,
-    ).coeff_path

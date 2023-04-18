@@ -12,8 +12,10 @@ from flytekit.types.file import FlyteFile
 from .src.facerender.animate import animate_from_coeff_generate_wf
 from .src.generate_batch import generate_batch_wf
 from .src.generate_facerender_batch import get_facerender_data
-from .src.test_audio2coeff import audio_to_coeff_wf
+from .src.test_audio2coeff import generate_audio_to_coeff
 from .src.utils.preprocess import crop_and_extract_wf
+
+import flytekit
 
 
 @dataclass_json
@@ -37,7 +39,6 @@ class ModelParams:
     still: bool = True
     preprocess: str = "crop"
     net_recon: str = "resnet50"
-    full_img_enhancer: Optional[str] = None
     use_last_fc: bool = False
     focal: float = 1015.0
     center: float = 112.0
@@ -47,7 +48,7 @@ class ModelParams:
     bfm_folder: str = "./checkpoints/BFM_Fitting/"
     bfm_model: str = "BFM_model_front.mat"
     checkpoint_dir: str = (
-        "https://github.com/Winfredy/SadTalker/releases/download/v0.0.1"
+        "https://github.com/Winfredy/SadTalker/releases/download/v0.0.2"
     )
 
 
@@ -59,6 +60,18 @@ def init_result_dir(result_dir: str) -> FlyteDirectory:
     with open(os.path.join(result_dir_path, "dummy"), "w") as f:
         f.write("blah blah")
     return FlyteDirectory(result_dir_path, result_dir)
+
+
+@task(disable_deck=False)
+def render_video(face_animation_video: FlyteFile):
+    flytekit.Deck(
+        "Face Animation",
+        f"""
+        <video width="540" height="310" controls>
+            <source src="{face_animation_video.download()}" type="video/mp4">
+        </video>
+        """,
+    )
 
 
 @dynamic(requests=Resources(cpu="3", mem="10Gi", storage="20Gi"))
@@ -82,8 +95,12 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
     free_view_checkpoint = os.path.join(
         checkpoint_dir, "facevid2vid_00189-model.pth.tar"
     )
-    mapping_checkpoint = os.path.join(checkpoint_dir, "mapping_00229-model.pth.tar")
-    facerender_yaml_path = "https://huggingface.co/spaces/vinthony/SadTalker/raw/main/config/facerender.yaml"
+    if model_params.preprocess == "full":
+        mapping_checkpoint = os.path.join(checkpoint_dir, "mapping_00109-model.pth.tar")
+        facerender_yaml_path = "https://huggingface.co/spaces/vinthony/SadTalker/raw/main/src/config/facerender_still.yaml"
+    else:
+        mapping_checkpoint = os.path.join(checkpoint_dir, "mapping_00229-model.pth.tar")
+        facerender_yaml_path = "https://huggingface.co/spaces/vinthony/SadTalker/raw/main/src/config/facerender.yaml"
 
     print("3DMM Extraction for source image")
     # flyte wf
@@ -96,6 +113,7 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
         save_dir=save_dir,
         save_dir_name="first_frame_dir",
         crop_or_resize=model_params.preprocess,
+        source_image_flag=True,
     )
     first_coeff_path = crop_and_extract_wf_output.coeff_path
     crop_pic_path = crop_and_extract_wf_output.png_path
@@ -154,18 +172,18 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
         still=model_params.still,
     )
     # flyte wf
-    coeff_path = audio_to_coeff_wf(
+    generate_audio_to_coeff_output = generate_audio_to_coeff(
         audio2pose_checkpoint=audio2pose_checkpoint,
         audio2pose_yaml_path=audio2pose_yaml_path,
         audio2exp_checkpoint=audio2exp_checkpoint,
         audio2exp_yaml_path=audio2exp_yaml_path,
         wav2lip_checkpoint=wav2lip_checkpoint,
         device=model_params.device,
-        save_dir=save_dir,
+        coeff_save_dir=save_dir,
         pose_style=model_params.pose_style,
         ref_pose_coeff_path=ref_pose_coeff_path,
         indiv_mels=batch.indiv_mels,
-        ref_coeff=batch.ref_coeff,
+        ref=batch.ref_coeff,
         num_frames=batch.num_frames,
         ratio_get=batch.ratio_gt,
         audio_name=batch.audio_name,
@@ -180,7 +198,7 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
     #         device=model_params.device,
     #         first_frame_coeff=first_coeff_path,
     #         save_dir=save_dir,
-    #         coeff_path=coeff_path,
+    #         coeff_path=generate_audio_to_coeff_output.coeff_path,
     #         audio_path=model_params.driven_audio,
     #         save_path="3dface.mp4",
     #     )
@@ -188,7 +206,7 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
     # coeff2video
     data = get_facerender_data(
         save_dir=save_dir,
-        coeff_path=coeff_path,
+        coeff_path=generate_audio_to_coeff_output.coeff_path,
         pic_path=crop_pic_path,
         first_coeff_path=first_coeff_path,
         batch_size=model_params.batch_size,
@@ -200,7 +218,7 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
         preprocess=model_params.preprocess,
     )
 
-    animate_from_coeff_save_dir = animate_from_coeff_generate_wf(
+    face_animation_video = animate_from_coeff_generate_wf(
         free_view_checkpoint=free_view_checkpoint,
         mapping_checkpoint=mapping_checkpoint,
         config_path=facerender_yaml_path,
@@ -209,7 +227,6 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
         pic_path=model_params.source_image,
         crop_info=crop_info,
         enhancer=model_params.enhancer,
-        full_img_enhancer=model_params.full_img_enhancer,
         source_image=data.source_image,
         source_semantics=data.source_semantics,
         frame_num=data.frame_num,
@@ -223,11 +240,13 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
         preprocess=model_params.preprocess,
     )
 
-    return animate_from_coeff_save_dir
+    return face_animation_video
 
 
 @workflow
-def sad_talker_wf(model_params: ModelParams = ModelParams()) -> FlyteFile:
+def sad_talker_wf(
+    model_params: ModelParams = ModelParams(),
+) -> FlyteFile:
     return sad_talker_dynamic_wf(model_params=model_params)
 
 
