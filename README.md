@@ -52,11 +52,11 @@ The table below shows the estimated cost, execution time, and resources used for
 
 | AWS Instance | vCPUs | Memory (GiB) | Actual hourly rate + Flyte deployment costs | Image | Audio | Model Params | Execution time | Estimated cost |
 | ------------ | ----- | ------------ | ------------------------------------------- | ----- | ----- | ------------ | -------------- | -------------- |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![screen-shot-2022-10-28-at-9-51-32-am-1666965104](https://user-images.githubusercontent.com/27777173/233045031-a3ce76e2-4898-45d9-b5cf-660d56c61ca9.png) | https://user-images.githubusercontent.com/27777173/233045874-3ce7b312-3d2f-432c-b493-e48253e86e8a.mov | Still + Preprocess=Crop | | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Preprocess=Full | | | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Enhancer | | | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Enhancer + Preprocess=Full | | | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Enhancer + Preprocess=Full | | | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![screen-shot-2022-10-28-at-9-51-32-am-1666965104](https://user-images.githubusercontent.com/27777173/233045031-a3ce76e2-4898-45d9-b5cf-660d56c61ca9.png) | [![silky-radio-wave](https://user-images.githubusercontent.com/27777173/233053068-eebe0578-069e-49b2-8041-5bfe1ab915c4.png)](https://user-images.githubusercontent.com/27777173/233049773-18a4f6a4-30bd-4c88-b2f5-5eeb80c452ae.mov)| Still + Preprocess=Crop | | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Preprocess=Full | | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Enhancer | | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Enhancer + Preprocess=Full | | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Enhancer + Preprocess=Full | | |
 
 Several Flyte features have been utilized to optimize the SadTalker inference pipeline:
 
