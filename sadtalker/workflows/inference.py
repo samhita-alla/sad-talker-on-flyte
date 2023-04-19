@@ -8,7 +8,6 @@ from flytekit import Resources, dynamic, task, workflow
 from flytekit.types.directory import FlyteDirectory
 from flytekit.types.file import FlyteFile
 
-# from .src.face3d.visualize import ModelParams, gen_composed_video
 from .src.facerender.animate import animate_from_coeff_generate_wf
 from .src.generate_batch import generate_batch_wf
 from .src.generate_facerender_batch import get_facerender_data
@@ -32,10 +31,9 @@ class ModelParams:
     input_yaw: List[int] = field(default_factory=lambda: [0])
     input_pitch: List[int] = field(default_factory=lambda: [0])
     input_roll: List[int] = field(default_factory=lambda: [0])
-    enhancer: Optional[str] = None
-    background_enhancer: Optional[str] = None
+    enhancer: str = ""
+    background_enhancer: str = "realesrgan"
     device: str = "cpu"
-    # face3dvis: bool = False
     still: bool = True
     preprocess: str = "crop"
     net_recon: str = "resnet50"
@@ -190,19 +188,6 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
         pic_name=batch.pic_name,
     )
 
-    # 3dface render
-    # if model_params.face3dvis:
-    #     # flyte wf
-    #     gen_composed_video(
-    #         args=model_params,
-    #         device=model_params.device,
-    #         first_frame_coeff=first_coeff_path,
-    #         save_dir=save_dir,
-    #         coeff_path=generate_audio_to_coeff_output.coeff_path,
-    #         audio_path=model_params.driven_audio,
-    #         save_path="3dface.mp4",
-    #     )
-
     # coeff2video
     data = get_facerender_data(
         save_dir=save_dir,
@@ -240,12 +225,16 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
         preprocess=model_params.preprocess,
     )
 
+    render_video(face_animation_video=face_animation_video)
+
     return face_animation_video
 
 
 @workflow
 def sad_talker_wf(
-    model_params: ModelParams = ModelParams(),
+    model_params: ModelParams = ModelParams(
+        preprocess="full", enhancer="gfpgan", still=False
+    ),
 ) -> FlyteFile:
     return sad_talker_dynamic_wf(model_params=model_params)
 

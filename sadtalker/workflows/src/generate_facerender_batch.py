@@ -67,7 +67,7 @@ def get_facerender_data(
     generated_3dmm = generated_dict["coeff_3dmm"]
     generated_3dmm[:, :64] = generated_3dmm[:, :64] * expression_scale
 
-    if still_mode:
+    if preprocess.lower() == "full":
         generated_3dmm = np.concatenate(
             [
                 generated_3dmm,
@@ -75,6 +75,8 @@ def get_facerender_data(
             ],
             axis=1,
         )
+
+    if still_mode:
         generated_3dmm[:, 64:] = np.repeat(
             source_semantics[:, 64:], generated_3dmm.shape[0], axis=0
         )

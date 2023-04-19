@@ -1,16 +1,54 @@
+import functools
 import os
+from typing import List, NamedTuple
 
+import cv2
+import imageio
+import numpy as np
 import torch
-from gfpgan import GFPGANer
-from tqdm import tqdm
+from flytekit import Resources, map_task, task, workflow
+from flytekit.types.directory import FlyteDirectory
+from flytekit.types.file import FlyteFile
 
+from gfpgan import GFPGANer
+
+from ..utils.videoio import save_video_with_watermark
 from .videoio import load_video_to_cv2
 
 
-def enhancer(images, method="gfpgan", bg_upsampler="realesrgan"):
-    print("face enhancer....")
-    if os.path.isfile(images):  # handle video to images
-        images = load_video_to_cv2(images)
+@task(requests=Resources(mem="5Gi", cpu="2"))
+def restore(idx: int, images: List[np.ndarray], restorer: GFPGANer) -> np.ndarray:
+    img = cv2.cvtColor(images[idx], cv2.COLOR_RGB2BGR)
+
+    # restore faces and background if necessary
+    cropped_faces, restored_faces, r_img = restorer.enhance(
+        img, has_aligned=False, only_center_face=False, paste_back=True
+    )
+
+    r_img = cv2.cvtColor(r_img, cv2.COLOR_BGR2RGB)
+
+    print(r_img)
+
+    return r_img
+
+
+enhancer_nt = NamedTuple(
+    "enhancer_nt", images=List[np.ndarray], restorer=GFPGANer, indices=List[int]
+)
+
+
+@task(requests=Resources(mem="3Gi", cpu="4"))
+def enhancer(
+    images: str,
+    method: str,
+    bg_upsampler: str,
+    save_dir: FlyteDirectory,
+) -> enhancer_nt:
+    save_dir_downloaded = save_dir.download()
+    images_path = os.path.join(save_dir_downloaded, images)
+
+    if os.path.isfile(images_path):  # handle video to images
+        list_images = load_video_to_cv2(images_path)
 
     # ------------------------ set up GFPGAN restorer ------------------------
     if method == "gfpgan":
@@ -83,14 +121,62 @@ def enhancer(images, method="gfpgan", bg_upsampler="realesrgan"):
         bg_upsampler=bg_upsampler,
     )
 
-    # ------------------------ restore ------------------------
-    restored_img = []
-    for idx in tqdm(range(len(images)), "Face Enhancer:"):
-        # restore faces and background if necessary
-        cropped_faces, restored_faces, r_img = restorer.enhance(
-            images[idx], has_aligned=False, only_center_face=False, paste_back=True
-        )
+    return enhancer_nt(
+        images=list_images,
+        restorer=restorer,
+        indices=list(range(len(list_images))),
+    )
 
-        restored_img += [r_img]
 
-    return restored_img
+@task(requests=Resources(mem="500Mi", cpu="2"))
+def enhancer_post_process(
+    new_audio_path: str,
+    restored_img: List[np.ndarray],
+    save_dir: FlyteDirectory,
+    video_name: str,
+) -> FlyteFile:
+    save_dir_downloaded = save_dir.download()
+    video_name_enhancer = video_name + "_enhanced.mp4"
+    enhanced_path = os.path.join(save_dir_downloaded, "temp_" + video_name_enhancer)
+    av_path_enhancer = os.path.join(save_dir_downloaded, video_name_enhancer)
+    return_path = av_path_enhancer
+
+    imageio.mimsave(enhanced_path, restored_img, fps=float(25))
+
+    save_video_with_watermark(
+        enhanced_path,
+        os.path.join(save_dir_downloaded, new_audio_path),
+        av_path_enhancer,
+        watermark=None,
+    )
+    print(f"The generated video is named {save_dir_downloaded}/{video_name_enhancer}")
+    os.remove(enhanced_path)
+
+    return FlyteFile(return_path)
+
+
+@workflow
+def enhancer_wf(
+    images: str,
+    method: str,
+    bg_upsampler: str,
+    video_name: str,
+    save_dir: FlyteDirectory,
+    new_audio_path: str,
+) -> FlyteFile:
+    enhancer_output = enhancer(
+        images=images,
+        method=method,
+        bg_upsampler=bg_upsampler,
+        save_dir=save_dir,
+    )
+    map_task_partial = functools.partial(
+        restore, images=enhancer_output.images, restorer=enhancer_output.restorer
+    )
+    restored_img = map_task(map_task_partial)(idx=enhancer_output.indices)
+    return enhancer_post_process(
+        restored_img=restored_img,
+        new_audio_path=new_audio_path,
+        save_dir=save_dir,
+        video_name=video_name,
+    )

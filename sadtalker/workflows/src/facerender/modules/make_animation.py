@@ -347,8 +347,8 @@ def make_animation(
     mapping.eval()
 
     with torch.no_grad():
-        list_target_semantics = list(range(target_semantics.shape[1]))
-        # list_target_semantics = [1]
+        # list_target_semantics = list(range(target_semantics.shape[1]))
+        list_target_semantics = [1, 2]
         kp_canonical = kp_extractor(source_image)
         he_source = mapping(source_semantics)
         kp_source = keypoint_transformation(kp_canonical, he_source)
