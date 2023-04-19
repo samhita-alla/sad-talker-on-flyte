@@ -50,13 +50,13 @@ class ModelParams:
 
 The table below shows the estimated cost, execution time, and resources used for running SadTalker on Flyte:
 
-| AWS Instance | vCPUs | Memory (GiB) | Actual hourly rate + Flyte deployment costs | Model Params | Execution time | Estimated cost | Flyte UI |
-| ------------ | ----- | ------------ | ------------------------------------------- | ------------ | -------------- | -------------- | -------- |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | Still + Preprocess=Crop | | | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | Still + Preprocess=Full | | | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | Still + Enhancer | | | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | Still + Enhancer + Preprocess=Full | | | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | Enhancer + Preprocess=Full | | | |
+| AWS Instance | vCPUs | Memory (GiB) | Actual hourly rate + Flyte deployment costs | Image | Audio | Model Params | Execution time | Estimated cost |
+| ------------ | ----- | ------------ | ------------------------------------------- | ----- | ----- | ------------ | -------------- | -------------- |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Preprocess=Crop | | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Preprocess=Full | | | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Enhancer | | | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Still + Enhancer + Preprocess=Full | | | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Enhancer + Preprocess=Full | | | |
 
 Several Flyte features have been utilized to optimize the SadTalker inference pipeline:
 
@@ -64,3 +64,4 @@ Several Flyte features have been utilized to optimize the SadTalker inference pi
 - **Caching**: We cached one task that analyzes the audio input, but caching opportunities are limited since task outputs are bound to change.
 - **Load balancing**: Load balancing is automatic with Flyte since it runs on top of Kubernetes, which provides native support for load balancing.
 - **Scalability**: Flyte can easily handle concurrent requests and scale up or down based on available resources, regardless of the number of executions.
+- **Efficient resource usage**: Flyte enables allocating resources per the task needs, meaning no over allocation of resources.
