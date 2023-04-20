@@ -1,5 +1,6 @@
-FROM pytorch/pytorch:2.0.0-cuda11.7-cudnn8-runtime
+FROM bitnami/pytorch:2.0.0-debian-11-r5
 
+USER root
 WORKDIR /root
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8

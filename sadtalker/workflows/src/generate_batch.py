@@ -99,8 +99,7 @@ get_data_nt = NamedTuple(
 )
 
 
-# @task(cache=True, cache_version="1.0")
-@task
+@task(cache=True, cache_version="1.0")
 def get_data(
     audio_path: FlyteFile,
 ) -> get_data_nt:

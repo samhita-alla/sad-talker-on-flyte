@@ -222,7 +222,7 @@ def load_cpk_mapping(
     return checkpoint["epoch"]
 
 
-@task(requests=Resources(mem="5Gi", cpu="2"))
+@task(requests=Resources(mem="7Gi", cpu="1"))
 def loop_make_animation(
     frame_idx: int,
     target_semantics: torch.Tensor,
@@ -347,8 +347,7 @@ def make_animation(
     mapping.eval()
 
     with torch.no_grad():
-        # list_target_semantics = list(range(target_semantics.shape[1]))
-        list_target_semantics = [1, 2]
+        list_target_semantics = list(range(target_semantics.shape[1]))
         kp_canonical = kp_extractor(source_image)
         he_source = mapping(source_semantics)
         kp_source = keypoint_transformation(kp_canonical, he_source)

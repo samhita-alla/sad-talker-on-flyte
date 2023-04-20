@@ -37,7 +37,7 @@ animate_from_coeff_generate_nt = NamedTuple(
 )
 
 
-@task(requests=Resources(mem="5Gi", cpu="4"))
+@task(requests=Resources(mem="10Gi", cpu="4"))
 def animate_from_coeff_generate(
     frame_num: int,
     crop_info: str,

@@ -60,18 +60,6 @@ def init_result_dir(result_dir: str) -> FlyteDirectory:
     return FlyteDirectory(result_dir_path, result_dir)
 
 
-@task(disable_deck=False)
-def render_video(face_animation_video: FlyteFile):
-    flytekit.Deck(
-        "Face Animation",
-        f"""
-        <video width="540" height="310" controls>
-            <source src="{face_animation_video.download()}" type="video/mp4">
-        </video>
-        """,
-    )
-
-
 @dynamic(requests=Resources(cpu="3", mem="10Gi", storage="20Gi"))
 def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
     save_dir = init_result_dir(result_dir=model_params.result_dir)
@@ -203,7 +191,7 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
         preprocess=model_params.preprocess,
     )
 
-    face_animation_video = animate_from_coeff_generate_wf(
+    return animate_from_coeff_generate_wf(
         free_view_checkpoint=free_view_checkpoint,
         mapping_checkpoint=mapping_checkpoint,
         config_path=facerender_yaml_path,
@@ -225,15 +213,18 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
         preprocess=model_params.preprocess,
     )
 
-    render_video(face_animation_video=face_animation_video)
-
-    return face_animation_video
-
 
 @workflow
 def sad_talker_wf(
     model_params: ModelParams = ModelParams(
-        preprocess="full", enhancer="gfpgan", still=False
+        # driven_audio="https://huggingface.co/datasets/Samhita/SadTalkerData/resolve/main/ariana-grande-7-rings-official-videomov_hc2Nmxal.wav",
+        still=False,
+        # enhancer="gfpgan",
+        # preprocess="full",
+        # driven_audio="https://huggingface.co/spaces/vinthony/SadTalker/resolve/main/examples/driven_audio/RD_Radio31_000.wav",
+        # source_image="https://user-images.githubusercontent.com/27777173/233065927-608fa380-c8ff-4fdf-baf1-52c6054adf79.jpg",
+        driven_audio="https://huggingface.co/spaces/vinthony/SadTalker/resolve/main/examples/driven_audio/chinese_news.wav",
+        source_image="https://user-images.githubusercontent.com/27777173/233068635-afb950e4-1e04-45af-8e7b-5193a164f5ac.jpg",
     ),
 ) -> FlyteFile:
     return sad_talker_dynamic_wf(model_params=model_params)

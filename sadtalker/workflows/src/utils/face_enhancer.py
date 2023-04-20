@@ -16,7 +16,7 @@ from ..utils.videoio import save_video_with_watermark
 from .videoio import load_video_to_cv2
 
 
-@task(requests=Resources(mem="5Gi", cpu="2"))
+@task(requests=Resources(mem="6Gi", cpu="1"))
 def restore(idx: int, images: List[np.ndarray], restorer: GFPGANer) -> np.ndarray:
     img = cv2.cvtColor(images[idx], cv2.COLOR_RGB2BGR)
 
@@ -25,11 +25,7 @@ def restore(idx: int, images: List[np.ndarray], restorer: GFPGANer) -> np.ndarra
         img, has_aligned=False, only_center_face=False, paste_back=True
     )
 
-    r_img = cv2.cvtColor(r_img, cv2.COLOR_BGR2RGB)
-
-    print(r_img)
-
-    return r_img
+    return cv2.cvtColor(r_img, cv2.COLOR_BGR2RGB)
 
 
 enhancer_nt = NamedTuple(
@@ -37,7 +33,7 @@ enhancer_nt = NamedTuple(
 )
 
 
-@task(requests=Resources(mem="3Gi", cpu="4"))
+@task(requests=Resources(mem="5Gi", cpu="3"))
 def enhancer(
     images: str,
     method: str,
@@ -128,7 +124,7 @@ def enhancer(
     )
 
 
-@task(requests=Resources(mem="500Mi", cpu="2"))
+@task(requests=Resources(mem="10Gi", cpu="2"))
 def enhancer_post_process(
     new_audio_path: str,
     restored_img: List[np.ndarray],
