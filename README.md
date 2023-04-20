@@ -59,6 +59,21 @@ The table below shows the estimated cost, execution time, and resources used for
 | g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![img_192753_actorpriyankachopra](https://user-images.githubusercontent.com/27777173/233068635-afb950e4-1e04-45af-8e7b-5193a164f5ac.jpg) | [![silky-radio-wave](https://user-images.githubusercontent.com/27777173/233053068-eebe0578-069e-49b2-8041-5bfe1ab915c4.png)](https://huggingface.co/spaces/vinthony/SadTalker/blob/main/examples/driven_audio/chinese_news.wav) (8 sec) | Still + Enhancer + Preprocess=Full | 20m 41s [Flyte Demo Link](https://development.uniondemo.run/console/projects/flytesnacks/domains/development/executions/apcp6chj45sj7ph9jtz4?duration=all) | |
 | g4dn.2xlarge | 8 | 32 | $0.752 + ? | | | Enhancer + Preprocess=Full | | |
 
+
+
+https://user-images.githubusercontent.com/27777173/233373191-80f68163-0f03-4e9f-b469-d22909dfff03.mp4
+
+
+
+https://user-images.githubusercontent.com/27777173/233373306-d669b75b-ec6c-4f24-8adf-e78dcc9e8edd.mp4
+
+
+
+https://user-images.githubusercontent.com/27777173/233373345-7c7bf076-879d-454e-94a1-39022c779422.mp4
+
+
+
+
 Several Flyte features have been utilized to optimize the SadTalker inference pipeline:
 
 - **Parallelism**: Map tasks have been employed to execute the code in parallel wherever possible. This approach significantly reduced the execution time.
