@@ -217,14 +217,11 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
 @workflow
 def sad_talker_wf(
     model_params: ModelParams = ModelParams(
-        # driven_audio="https://huggingface.co/datasets/Samhita/SadTalkerData/resolve/main/ariana-grande-7-rings-official-videomov_hc2Nmxal.wav",
-        # still=False,
-        # enhancer="gfpgan",
+        source_image="https://user-images.githubusercontent.com/27777173/233068635-afb950e4-1e04-45af-8e7b-5193a164f5ac.jpg",
+        driven_audio="https://huggingface.co/spaces/vinthony/SadTalker/resolve/main/examples/driven_audio/chinese_news.wav",
+        still=False,
         preprocess="full",
-        driven_audio="https://huggingface.co/spaces/vinthony/SadTalker/resolve/main/examples/driven_audio/RD_Radio31_000.wav",
-        source_image="https://user-images.githubusercontent.com/27777173/233065578-cd284886-a756-4323-a404-edcdd62b47b6.jpg",
-        # driven_audio="https://huggingface.co/spaces/vinthony/SadTalker/resolve/main/examples/driven_audio/chinese_news.wav",
-        # source_image="https://huggingface.co/datasets/Samhita/SadTalkerData/resolve/main/bb6f6065a9676bda462b93f24fd790368e-17-gal-gadot.rsquare.w700.webp",
+        enhancer="gfpgan",
     ),
 ) -> FlyteFile:
     return sad_talker_dynamic_wf(model_params=model_params)

@@ -222,7 +222,7 @@ def load_cpk_mapping(
     return checkpoint["epoch"]
 
 
-@task(requests=Resources(mem="7Gi", cpu="1"))
+@task(requests=Resources(mem="8Gi", cpu="2"))
 def loop_make_animation(
     frame_idx: int,
     target_semantics: torch.Tensor,

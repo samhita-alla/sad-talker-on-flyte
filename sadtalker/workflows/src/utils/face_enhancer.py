@@ -16,7 +16,7 @@ from ..utils.videoio import save_video_with_watermark
 from .videoio import load_video_to_cv2
 
 
-@task(requests=Resources(mem="6Gi", cpu="1"))
+@task(requests=Resources(mem="8Gi", cpu="2"))
 def restore(idx: int, images: List[np.ndarray], restorer: GFPGANer) -> np.ndarray:
     img = cv2.cvtColor(images[idx], cv2.COLOR_RGB2BGR)
 
