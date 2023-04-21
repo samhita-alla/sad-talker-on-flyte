@@ -55,20 +55,15 @@ The table below shows the estimated cost, execution time, and resources used for
 | g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![musk](https://user-images.githubusercontent.com/27777173/233367190-ffed7947-06ec-4609-baad-742ede1327b2.jpg) | [![silky-radio-wave](https://user-images.githubusercontent.com/27777173/233053068-eebe0578-069e-49b2-8041-5bfe1ab915c4.png)](https://huggingface.co/spaces/vinthony/SadTalker/blob/main/examples/driven_audio/bus_chinese.wav) (3 sec) | Default args | 6m 23s [Flyte Demo Link](https://development.uniondemo.run/console/projects/flytesnacks/domains/development/executions/adm7fzf5tp98846txhlw?duration=all) |  |
 | g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![img_192753_actorpriyankachopra](https://user-images.githubusercontent.com/27777173/233068635-afb950e4-1e04-45af-8e7b-5193a164f5ac.jpg) | [![silky-radio-wave](https://user-images.githubusercontent.com/27777173/233053068-eebe0578-069e-49b2-8041-5bfe1ab915c4.png)](https://huggingface.co/spaces/vinthony/SadTalker/blob/main/examples/driven_audio/chinese_news.wav) (8 sec) | Default args | 9m 58s [Flyte Demo Link](https://development.uniondemo.run/console/projects/flytesnacks/domains/development/executions/atrlrbp7wkv5tflfcgl8?duration=all) | |
 | g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![obama](https://user-images.githubusercontent.com/27777173/233065578-cd284886-a756-4323-a404-edcdd62b47b6.jpg) | [![silky-radio-wave](https://user-images.githubusercontent.com/27777173/233053068-eebe0578-069e-49b2-8041-5bfe1ab915c4.png)](https://huggingface.co/spaces/vinthony/SadTalker/resolve/main/examples/driven_audio/RD_Radio31_000.wav) (8 sec) | Still=False + Preprocess=Full | 9m 40s [Flyte Demo Link](https://development.uniondemo.run/console/projects/flytesnacks/domains/development/executions/ajmmrngqr2tphtf6c74t?duration=all) | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![img_192753_actorpriyankachopra](https://user-images.githubusercontent.com/27777173/233068635-afb950e4-1e04-45af-8e7b-5193a164f5ac.jpg) | [![silky-radio-wave](https://user-images.githubusercontent.com/27777173/233053068-eebe0578-069e-49b2-8041-5bfe1ab915c4.png)](https://huggingface.co/spaces/vinthony/SadTalker/blob/main/examples/driven_audio/chinese_news.wav) (8 sec) | Still=False + Enhancer + Preprocess=Full | 20m 41s [Flyte Demo Link](https://development.uniondemo.run/console/projects/flytesnacks/domains/development/executions/apcp6chj45sj7ph9jtz4?duration=all) | |
-| g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![natalie_portman](https://huggingface.co/datasets/Samhita/SadTalkerData/resolve/main/edPU5HxncLWa1YkgRPNkSd68ONG.jpg) | [![silky-radio-wave](https://user-images.githubusercontent.com/27777173/233053068-eebe0578-069e-49b2-8041-5bfe1ab915c4.png)]() (12 sec) | Still=False + Enhancer + Preprocess=Full | | |
-
-
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![img_192753_actorpriyankachopra](https://user-images.githubusercontent.com/27777173/233068635-afb950e4-1e04-45af-8e7b-5193a164f5ac.jpg) | [![silky-radio-wave](https://user-images.githubusercontent.com/27777173/233053068-eebe0578-069e-49b2-8041-5bfe1ab915c4.png)](https://huggingface.co/spaces/vinthony/SadTalker/blob/main/examples/driven_audio/chinese_news.wav) (8 sec) | Still=True + Enhancer + Preprocess=Full | 20m 41s [Flyte Demo Link](https://development.uniondemo.run/console/projects/flytesnacks/domains/development/executions/apcp6chj45sj7ph9jtz4?duration=all) | |
+| g4dn.2xlarge | 8 | 32 | $0.752 + ? | ![natalie_portman](https://huggingface.co/datasets/Samhita/SadTalkerData/resolve/main/edPU5HxncLWa1YkgRPNkSd68ONG.jpg) | [![silky-radio-wave](https://user-images.githubusercontent.com/27777173/233053068-eebe0578-069e-49b2-8041-5bfe1ab915c4.png)](https://huggingface.co/datasets/Samhita/SadTalkerData/resolve/main/audio-oprah-winfrey_95QfotBw.mp3) (25 sec) | Still=False + Enhancer + Preprocess=Full | 56m 3s[Flyte Demo Link](https://development.uniondemo.run/console/projects/flytesnacks/domains/development/executions/a29jz62n4pdgvx4gxd96?duration=all) | |
 
 https://user-images.githubusercontent.com/27777173/233373191-80f68163-0f03-4e9f-b469-d22909dfff03.mp4
 
 
 
 
-
-
 https://user-images.githubusercontent.com/27777173/233373345-7c7bf076-879d-454e-94a1-39022c779422.mp4
-
 
 ## Flyte Value Proposition
 

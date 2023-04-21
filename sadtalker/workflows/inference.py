@@ -216,13 +216,7 @@ def sad_talker_dynamic_wf(model_params: ModelParams) -> FlyteFile:
 
 @workflow
 def sad_talker_wf(
-    model_params: ModelParams = ModelParams(
-        source_image="https://user-images.githubusercontent.com/27777173/233068635-afb950e4-1e04-45af-8e7b-5193a164f5ac.jpg",
-        driven_audio="https://huggingface.co/spaces/vinthony/SadTalker/resolve/main/examples/driven_audio/chinese_news.wav",
-        still=False,
-        preprocess="full",
-        enhancer="gfpgan",
-    ),
+    model_params: ModelParams = ModelParams(),
 ) -> FlyteFile:
     return sad_talker_dynamic_wf(model_params=model_params)
 
