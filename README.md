@@ -1,6 +1,6 @@
 # SadTalker (CVPR 2023) on Flyte
 
-This is an attempt towards running [SadTalker inference](https://github.com/Winfredy/SadTalker) on [Flyte](https://github.com/flyteorg/flyte) with just CPUs. To achieve this, the inference code has been adapted from the original SadTalker inference code.
+This is an attempt towards running [SadTalker inference](https://github.com/Winfredy/SadTalker) on [Flyte](https://github.com/flyteorg/flyte) with just **CPUs**. To achieve this, the inference code has been adapted from the original SadTalker inference code.
 
 ## SadTalker
 SadTalker generates 3D motion coefficients (head pose, expression) of the 3DMM from audio and implicitly modulates a novel 3D-aware face render for talking head generation.
