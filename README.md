@@ -66,7 +66,7 @@ https://user-images.githubusercontent.com/27777173/233373345-7c7bf076-879d-454e-
 
 https://user-images.githubusercontent.com/27777173/233592722-df8baf5d-09ea-4521-9ffd-515d7bec45d4.mp4
 
-## Flyte Value Proposition
+## Why Flyte
 
 Several Flyte features have been utilized to optimize the SadTalker inference pipeline:
 
