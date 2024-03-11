@@ -66,7 +66,10 @@ https://user-images.githubusercontent.com/27777173/233373345-7c7bf076-879d-454e-
 
 https://user-images.githubusercontent.com/27777173/233592722-df8baf5d-09ea-4521-9ffd-515d7bec45d4.mp4
 
-https://github.com/samhita-alla/sad-talker-on-flyte/assets/27777173/220bffa3-f8f9-41a7-aadd-618587974147
+
+
+https://github.com/samhita-alla/sad-talker-on-flyte/assets/27777173/e3246160-ba8d-474d-8fe3-ca868321ae7b
+
 
 
 ## Why Flyte
